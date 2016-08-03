@@ -16,17 +16,41 @@ angular.module('SPApp', ['ngRoute'])
             templateUrl: 'templates/movies.html',
             controller: 'MoviesCtrl'
         })
+        .when('/movie/:id', {
+            templateUrl: 'templates/movie.html',
+            controller: 'MovieCtrl'
+        })
         .otherwise({
             redirectTo: '/home'
         })
 })
 
+.run(function($rootScope, $location) {
+
+    $rootScope.isActive = function(location) {
+        return $location.path().indexOf(location) === 0;
+    }
+})
+
 .controller('MoviesCtrl', function($scope, MoviesFactory) {
-	MoviesFactory
+    MoviesFactory
         .get()
         .then(function(response) {
             console.log(response);
             $scope.movies = response.data;
+        })
+        .catch(function(error) {
+            console.log(error);
+        })
+})
+
+.controller('MovieCtrl', function($routeParams, MoviesFactory, $scope) {
+    console.log($routeParams)
+    MoviesFactory
+        .get()
+        .then(function(response) {
+            console.log(response);
+            $scope.currMovie = response.data[$routeParams.id];
         })
         .catch(function(error) {
             console.log(error);
